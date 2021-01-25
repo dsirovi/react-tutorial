@@ -1,93 +1,35 @@
-import React, {useState, Component} from "react";
+import React, {Component} from "react";
 import './App.css';
-import Person from './Person/Person';
+import Validation from './Validation/Validation.js'
+import Char from './Char/Char';
 
 class App extends Component {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     state = {
-        persons: [
-            {id: 'asd1', name: 'Max', age: 28},
-            {id: 'asd2', name: 'Manu', age: 22},
-            {id: 'asd3', name: 'Michele', age: 21}
-        ],
-        otherValue: 'Some value',
-        showPersons: false
-    };
-
-
-    togglePersonsHandler = () => {
-        const doesShow = this.state.showPersons;
-        this.setState({showPersons: !doesShow})
+        userInput: ''
     }
 
-    deletePersonHandler = (personIndex) => {
-        // const persons = this.state.persons.slice();
-        const persons = [...this.state.persons]
-        persons.splice(personIndex, 1);
-        this.setState({persons: persons});
-
+    inputChangeHandler = (event) => {
+        this.setState({userInput: event.target.value})
     }
 
-    nameChangeHandler = (event, id) => {
-        const personIndex = this.state.persons.findIndex(p => {
-            return p.id === id;
-        });
-
-        const person = {...this.state.persons[personIndex]};
-        person.name = event.target.value;
-
-        const persons = [...this.state.persons];
-        persons[personIndex] = person;
-
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        this.setState({
-            persons: persons
-        })
+    deleteCharHandler = (index) => {
+        const text = this.state.userInput.split('');
+        text.splice(index, 1);
+        const updatedText = text.join('');
+        this.setState({userInput: updatedText})
     }
-
 
     render() {
-        const buttonStyle = {
-            background: 'white',
-            font: 'inherit',
-            border: '1px solid black',
-            padding: '8px',
-            cursor: 'pointer'
-        };
-
-        let persons = null;
-
-        if (this.state.showPersons) {
-            persons = (
-                <div>
-                    {this.state.persons.map((person, index) => {
-                        return <Person name={person.name}
-                                       age={person.age}
-                                       click={() => this.deletePersonHandler(index)}
-                                       key={person.id}
-                                       changed={(event) => this.nameChangeHandler(event, person.id)}/>
-                    })}
-                    {/*<Person name={this.state.persons[0].name}
-                            age={this.state.persons[0].age}/>
-                    <Person click={this.switchNameHandler.bind(this, 'Trash')}
-                            name={this.state.persons[1].name}
-                            age={this.state.persons[1].age}
-                            changed={this.nameChangeHandler}
-                    >My hobbies: Racing</Person>
-                    <Person name={this.state.persons[2].name}
-                            age={this.state.persons[2].age}/>*/}
-                </div>
-            )
-        }
+        let charList = this.state.userInput.split('').map((ch,index) => {
+            return <Char character={ch} key={index} clicked={() => this.deleteCharHandler(index)}/>
+        })
 
         return (
             <div className="App">
-                <h1>Hi, I'm React App</h1>
-                {/*Do not use to often*/}
-                <button style={buttonStyle}
-                        onClick={this.togglePersonsHandler}>Toggle persons
-                </button>
-                {persons}
+                <input type="text" onChange={this.inputChangeHandler} value={this.state.userInput}/>
+                <p>{this.state.userInput}</p>
+                <Validation inputLenght={this.state.userInput.length}/>
+                {charList}
             </div>
         );
     }
